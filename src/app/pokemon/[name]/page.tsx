@@ -1,12 +1,40 @@
 import { getPokemonDetails, getPokemonImageUrl } from '@/lib/api';
 import Image from 'next/image';
 import Link from 'next/link';
+import { notFound } from 'next/navigation';
 
 export async function generateMetadata({ params }: { params: Promise<{ name: string }> }) {
   const { name } = await params;
-  return {
-    title: `${name.charAt(0).toUpperCase() + name.slice(1)} | Pokedex Lite`,
-  };
+  const lowercaseName = name.toLowerCase();
+  const capitalizedName = name.charAt(0).toUpperCase() + name.slice(1);
+
+  try {
+    const details = await getPokemonDetails(lowercaseName);
+    const primaryType = details.types[0]?.type.name || 'normal';
+    const imageUrl = details.sprites?.other?.['official-artwork']?.front_default || getPokemonImageUrl(details.id.toString());
+
+    return {
+      title: `${capitalizedName} - ${primaryType.toUpperCase()} Type | Pokédex Lite`,
+      description: `View stats, abilities, height, weight, and detailed information for ${capitalizedName}, a ${primaryType}-type Pokémon in Pokédex Lite.`,
+      openGraph: {
+        title: `${capitalizedName} | Pokédex Lite`,
+        description: `View stats, abilities, and details for ${capitalizedName}, a ${primaryType}-type Pokémon.`,
+        images: [
+          {
+            url: imageUrl,
+            width: 800,
+            height: 800,
+            alt: `${capitalizedName} official artwork`,
+          }
+        ]
+      }
+    };
+  } catch (e) {
+    return {
+      title: 'Pokémon Not Found | Pokédex Lite',
+      description: 'The requested Pokémon could not be found in our database.',
+    };
+  }
 }
 
 const TYPE_COLORS: Record<string, string> = {
@@ -37,12 +65,7 @@ export default async function PokemonPage({ params }: { params: Promise<{ name: 
   try {
     details = await getPokemonDetails(name.toLowerCase());
   } catch (e) {
-    return (
-      <div className="container mx-auto px-4 py-20 text-center">
-        <h1 className="text-4xl font-bold font-outfit mb-4">Pokemon Not Found</h1>
-        <Link href="/" className="text-pokered hover:underline">Return to Home</Link>
-      </div>
-    );
+    notFound();
   }
 
   const imageUrl = details.sprites?.other?.['official-artwork']?.front_default || getPokemonImageUrl(details.id.toString());

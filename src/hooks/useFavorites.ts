@@ -26,7 +26,8 @@ export function useFavorites() {
       if (exists) {
         updated = prev.filter((p) => p.name !== pokemon.name);
       } else {
-        updated = [...prev, pokemon];
+        const { name, url } = pokemon;
+        updated = [...prev, { name, url }];
       }
       localStorage.setItem('pokedex-favorites', JSON.stringify(updated));
       return updated;

@@ -3,9 +3,32 @@
 import PokemonCard from '@/components/PokemonCard';
 import { useFavorites } from '@/hooks/useFavorites';
 import Link from 'next/link';
+import { useQueries } from '@tanstack/react-query';
+import { getPokemonDetails, extractIdFromUrl } from '@/lib/api';
+import { PokemonWithDetails } from '@/components/HomeClient';
 
 export default function FavoritesPage() {
   const { favorites, toggleFavorite, isLoaded } = useFavorites();
+
+  const favoriteQueries = useQueries({
+    queries: favorites.map((pokemon) => {
+      const id = extractIdFromUrl(pokemon.url);
+      return {
+        queryKey: ['pokemonDetails', id],
+        queryFn: () => getPokemonDetails(id),
+        staleTime: Infinity,
+      };
+    }),
+  });
+
+  const isLoading = favoriteQueries.some((q) => q.isLoading);
+
+  const readyFavorites = favorites
+    .map((pokemon, index) => ({
+      ...pokemon,
+      details: favoriteQueries[index].data,
+    }))
+    .filter((p) => p.details) as PokemonWithDetails[];
 
   return (
     <main className="container mx-auto px-4 py-8 min-h-screen">
@@ -18,13 +41,13 @@ export default function FavoritesPage() {
         </p>
       </div>
 
-      {!isLoaded ? (
+      {!isLoaded || isLoading ? (
         <div className="flex justify-center py-8">
           <div className="w-12 h-12 rounded-full border-4 border-slate-200 border-t-pokered animate-spin"></div>
         </div>
-      ) : favorites.length > 0 ? (
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-          {favorites.map((pokemon) => (
+      ) : readyFavorites.length > 0 ? (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {readyFavorites.map((pokemon) => (
             <PokemonCard 
               key={pokemon.name} 
               pokemon={pokemon} 

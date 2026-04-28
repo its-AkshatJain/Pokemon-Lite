@@ -67,15 +67,18 @@ export default function PokemonCard({ pokemon, isFavorite, onToggleFavorite }: P
           {id.padStart(4, '0')}
         </div>
 
-        {/* Type Badge */}
-        {details && (
-          <div 
-            className="px-3 py-1 rounded-full text-xs font-bold text-white shadow-sm capitalize tracking-wide backdrop-blur-sm"
-            style={{ backgroundColor: typeColor }}
-          >
-            {primaryType}
-          </div>
-        )}
+        {/* Type Badges */}
+        <div className="flex flex-col gap-1.5 items-end">
+          {details?.types.map((t) => (
+            <div 
+              key={t.type.name}
+              className="px-3 py-1 rounded-full text-[10px] font-black text-white shadow-sm uppercase tracking-wider backdrop-blur-sm"
+              style={{ backgroundColor: TYPE_COLORS[t.type.name] || '#A8A77A' }}
+            >
+              {t.type.name}
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Clickable Area for Image and Name */}

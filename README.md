@@ -19,6 +19,8 @@ A premium, highly responsive Pokédex web application built with modern web tech
 ## 💻 Technologies Used
 
 - **Framework:** [Next.js (App Router)](https://nextjs.org/) - Chosen for its powerful server components, intuitive routing, and built-in optimization tools (like `next/image`).
+- **Server-Side Rendering (SSR):** Implemented React Server Components and React Query `HydrationBoundary` to instantly pre-fetch and render the initial Pokémon list directly from the server. This completely eliminates layout shifts and initial loading spinners for a vastly improved SEO and Time-to-Interactive score.
+- **State & Caching:** [TanStack Query (React Query)](https://tanstack.com/query/latest) - Used to aggressively cache data, handle infinite scrolling seamlessly without manual state tracking, and ensure smooth UX.
 - **Language:** TypeScript - For strict type safety, better developer experience, and more robust API data handling.
 - **Styling:** [Tailwind CSS](https://tailwindcss.com/) - Used for rapid UI development, consistent design tokens, and highly maintainable utility classes.
 - **Icons:** [Lucide React](https://lucide.dev/) - For clean, scalable, and consistent vector icons.

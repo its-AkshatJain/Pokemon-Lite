@@ -90,3 +90,32 @@ export function extractIdFromUrl(url: string): string {
 export function getPokemonImageUrl(id: string): string {
   return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`;
 }
+
+// Shared logic for useInfiniteQuery to be used by both SSR (page.tsx) and Client (HomeClient.tsx)
+export async function fetchPokemonPage(pageParam: number, selectedType: string, limit = 24) {
+  let listToProcess: PokemonListItem[] = [];
+  let nextHasMore = false;
+
+  if (selectedType) {
+    const allOfType = await getPokemonByType(selectedType);
+    listToProcess = allOfType.slice(pageParam * limit, (pageParam + 1) * limit);
+    nextHasMore = allOfType.length > (pageParam + 1) * limit;
+  } else {
+    const response = await getPokemonList(limit, pageParam * limit);
+    listToProcess = response.results;
+    nextHasMore = !!response.next;
+  }
+
+  const detailedList = await Promise.all(
+    listToProcess.map(async (pokemon) => {
+      const id = extractIdFromUrl(pokemon.url);
+      const details = await getPokemonDetails(id);
+      return { ...pokemon, details };
+    })
+  );
+
+  return {
+    results: detailedList,
+    nextPage: nextHasMore ? pageParam + 1 : undefined,
+  };
+}

@@ -3,6 +3,7 @@ import { Inter, Outfit } from 'next/font/google';
 import './globals.css';
 import Navbar from '@/components/Navbar';
 import Providers from '@/components/Providers';
+import { AuthButton } from '@/components/AuthButton';
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-sans' });
 const outfit = Outfit({ subsets: ['latin'], variable: '--font-outfit' });
@@ -21,7 +22,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${outfit.variable}`}>
       <body suppressHydrationWarning className="antialiased min-h-screen transition-colors duration-300">
         <Providers>
-          <Navbar />
+          <Navbar authButton={<AuthButton />} />
           {children}
         </Providers>
       </body>

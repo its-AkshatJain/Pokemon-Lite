@@ -67,9 +67,3 @@ Make sure you have [Node.js](https://nodejs.org/) (v18 or higher) installed on y
    - *Challenge:* The PokéAPI `list` endpoint only returns the `name` and `url`. Getting the "Type" to color-code the cards correctly required an additional API call for every single card rendered, potentially slowing down the list.
    - *Solution:* Implemented **batch fetching** at the parent level (`HomeClient.tsx`). Instead of having each card independently fetch its own data (which causes N+1 waterfalls and unexpected performance issues), the main list resolves chunks of exactly 24 Pokémon concurrently using `Promise.all`. Furthermore, when filtering by type (which natively returns hundreds of Pokémon at once from PokéAPI), the list caches the result and performs client-side slicing to ensure we only ever batch-fetch what is actively visible on the screen.
 
-## ☁️ Deployment
-
-This Next.js application can be effortlessly deployed to Vercel.
-1. Push your code to a GitHub repository.
-2. Log into [Vercel](https://vercel.com/) and import the repository.
-3. Vercel will automatically detect Next.js and build the application.
